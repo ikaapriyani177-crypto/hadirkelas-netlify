@@ -43,7 +43,7 @@
     </aside>
 
     <main class="main-area">
-      <header class="topbar"><div><div class="mobile-brand brand"><span class="brand-mark">H</span><span>HadirKelas</span></div><p class="topbar-date" id="todayLabel">Hari ini</p><h2 id="pageHeading">Dashboard</h2></div><div class="topbar-actions"><span class="cloud-status"><i></i> Terhubung ke Spreadsheet</span><button id="refreshButton" class="icon-button" title="Muat ulang data" aria-label="Muat ulang data">↻</button><div class="avatar">G</div></div></header>
+      <header class="topbar"><div><div class="mobile-brand brand"><span class="brand-mark">H</span><span>HadirKelas</span></div><p class="topbar-date" id="todayLabel">Hari ini</p><h2 id="pageHeading">Dashboard</h2></div><div class="topbar-actions"><span class="cloud-status"><i></i> Sinkronisasi data</span><button id="refreshButton" class="icon-button" title="Muat ulang data" aria-label="Muat ulang data">↻</button><div class="avatar">G</div></div></header>
       <div id="globalMessage" class="global-message" role="status" hidden></div>
 
       <section id="dashboardPage" class="page-view">
@@ -71,6 +71,13 @@
 
       <section id="studentsPage" class="page-view" hidden>
         <div class="welcome-row compact-welcome"><div><p class="eyebrow">DATABASE SISWA</p><h1>Data siswa</h1><p class="muted">Kelola daftar siswa dan buat kartu identitas QR untuk setiap anak.</p></div><button id="printCardsButton" class="btn btn-primary">▣ Cetak kartu QR</button></div>
+        <article class="panel import-panel">
+          <div class="panel-head"><div><p class="eyebrow">IMPOR DATA</p><h3>Upload data siswa sekaligus</h3><p class="muted small">Unggah file CSV dari Excel atau Google Sheets agar tidak perlu memasukkan siswa satu per satu.</p></div><span class="quick-icon quick-student">↑</span></div>
+          <div class="import-grid">
+            <div class="import-instructions"><b>Format kolom</b><p>Gunakan tiga kolom: <strong>NIS</strong>, <strong>Nama</strong>, dan <strong>Kelas</strong>. Baris pertama harus berupa judul kolom.</p><a class="text-button import-template-link" href="/student-upload-template.csv" download>↓ Unduh template CSV</a><p class="muted small">NIS harus unik. Data dengan NIS yang sudah ada akan diperbarui; siswa lain tidak dihapus.</p></div>
+            <form id="studentImportForm" class="import-form"><div class="field"><label for="studentCsvFile">Pilih file CSV</label><input id="studentCsvFile" type="file" accept=".csv,text/csv" required><small class="field-hint">Maksimal 1.000 baris data. Untuk file Excel (.xlsx), simpan/unduh dulu sebagai CSV.</small></div><div id="studentImportPreview" class="import-preview" aria-live="polite">Belum ada file dipilih.</div><button id="importStudentsButton" class="btn btn-primary" type="submit" disabled>↑ Upload dan simpan siswa</button></form>
+          </div>
+        </article>
         <div class="students-layout"><article class="panel student-form-panel"><div class="panel-head"><div><h3 id="studentFormTitle">Tambah siswa</h3><p class="muted small">Isi data siswa dengan benar.</p></div><span class="quick-icon quick-student">＋</span></div><form id="studentForm" class="stack-form"><input type="hidden" id="studentId"><div class="field"><label for="studentNumber">NIS / nomor induk</label><input id="studentNumber" type="text" maxlength="40" placeholder="Contoh: 001" required></div><div class="field"><label for="studentName">Nama lengkap</label><input id="studentName" type="text" maxlength="100" placeholder="Nama siswa" required></div><div class="field"><label for="studentClass">Kelas</label><input id="studentClass" type="text" maxlength="40" placeholder="Contoh: 5A" required></div><div class="form-actions"><button class="btn btn-primary btn-wide" type="submit" id="saveStudentButton">Simpan siswa</button><button class="btn btn-quiet btn-wide" type="button" id="cancelStudentEdit" hidden>Batal edit</button></div></form></article><article class="panel student-list-panel"><div class="panel-head"><div><h3>Daftar siswa</h3><p class="muted small">QR Code terhubung ke ID unik internal, bukan nama siswa.</p></div><div class="student-total" id="studentTotal">0</div></div><div class="table-toolbar"><input id="studentSearch" type="search" placeholder="Cari nama, NIS, atau kelas..." aria-label="Cari siswa"><select id="studentClassFilter" aria-label="Filter kelas"><option value="">Semua kelas</option></select></div><div id="studentsTable" class="table-wrap"></div></article></div>
       </section>
 
