@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#176b5b">
+  <meta name="description" content="Aplikasi absensi siswa berbasis QR Code untuk guru sekolah. Data tersimpan di Google Spreadsheet.">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/styles.css">
+  <title>HadirKelas — Absensi QR</title>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen" hidden aria-live="polite">
+    <div class="login-art" aria-hidden="true">
+      <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+      <div class="art-card">
+        <div class="art-check">✓</div>
+        <div class="art-lines"><i></i><i></i><i></i></div>
+        <div class="art-qr"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <p class="art-caption">Presensi lebih mudah.<br><b>Data rapi setiap hari.</b></p>
+    </div>
+    <div class="login-panel">
+      <div class="brand brand-login"><span class="brand-mark">H</span><span>HadirKelas<small>ABSENSI SEKOLAH</small></span></div>
+      <div class="login-copy"><p class="eyebrow">SELAMAT DATANG</p><h1>Absensi kelas,<br><em>jadi lebih praktis.</em></h1><p>Aplikasi dibuka tanpa PIN. Menyiapkan dashboard absensi...</p></div>
+      <p class="login-foot"><span class="status-dot"></span> Menyiapkan koneksi data</p>
+    </div>
+  </div>
+
+  <div id="application" class="application">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard" aria-label="HadirKelas beranda"><span class="brand-mark">H</span><span>HadirKelas<small>ABSENSI SEKOLAH</small></span></a>
+      <div class="side-label">MENU UTAMA</div>
+      <nav class="side-nav" aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">▦</span> Dashboard</button>
+        <button class="nav-item" data-view="attendance"><span class="nav-icon">▣</span> Absensi QR <span class="nav-chip">QR</span></button>
+        <button class="nav-item" data-view="students"><span class="nav-icon">♙</span> Data siswa</button>
+        <button class="nav-item" data-view="reports"><span class="nav-icon">▤</span> Rekap absensi</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="sidebar-note"><span class="note-icon">✦</span><b>Tips hari ini</b><p>Buka sesi absensi terlebih dahulu agar siswa yang belum dipindai otomatis masuk daftar alpa.</p></div></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar"><div><div class="mobile-brand brand"><span class="brand-mark">H</span><span>HadirKelas</span></div><p class="topbar-date" id="todayLabel">Hari ini</p><h2 id="pageHeading">Dashboard</h2></div><div class="topbar-actions"><span class="cloud-status"><i></i> Terhubung ke Spreadsheet</span><button id="refreshButton" class="icon-button" title="Muat ulang data" aria-label="Muat ulang data">↻</button><div class="avatar">G</div></div></header>
+      <div id="globalMessage" class="global-message" role="status" hidden></div>
+
+      <section id="dashboardPage" class="page-view">
+        <div class="welcome-row"><div><p class="eyebrow">RINGKASAN KELAS</p><h1>Selamat datang, Guru! <span>✦</span></h1><p class="muted">Pantau kehadiran siswa tanpa repot mencatat manual.</p></div><button class="btn btn-primary" data-goto="attendance">＋ Mulai absensi</button></div>
+        <div class="stat-grid">
+          <article class="stat-card stat-total"><div class="stat-top"><span>Total siswa aktif</span><span class="stat-icon">♙</span></div><div class="stat-number" id="statStudents">0</div><div class="stat-foot">Terdaftar dalam data siswa</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Hadir hari ini</span><span class="stat-icon icon-green">✓</span></div><div class="stat-number" id="statPresent">0</div><div class="stat-foot"><span class="mini-dot green"></span> Sudah melakukan presensi</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Izin & sakit</span><span class="stat-icon icon-amber">♡</span></div><div class="stat-number" id="statExcused">0</div><div class="stat-foot">Sesuai status pada sesi aktif</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Belum hadir / alpa</span><span class="stat-icon icon-red">!</span></div><div class="stat-number" id="statAbsent">0</div><div class="stat-foot">Periksa sebelum akhir pelajaran</div></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="panel attendance-summary"><div class="panel-head"><div><p class="eyebrow">KEHADIRAN</p><h3>Ringkasan hari ini</h3></div><button class="text-button" data-goto="reports">Lihat rekap →</button></div><div id="attendanceSummary" class="summary-content"><div class="empty-state">Belum ada sesi absensi hari ini.</div></div></article>
+          <article class="panel quick-panel"><div class="panel-head"><div><p class="eyebrow">AKSES CEPAT</p><h3>Yang ingin dilakukan?</h3></div></div><div class="quick-links"><button data-goto="attendance"><span class="quick-icon quick-qr">▣</span><span><b>Pindai QR siswa</b><small>Catat kehadiran otomatis</small></span><strong>→</strong></button><button data-goto="students"><span class="quick-icon quick-student">♙</span><span><b>Kelola data siswa</b><small>Tambah siswa dan cetak kartu</small></span><strong>→</strong></button><button data-goto="reports"><span class="quick-icon quick-report">▤</span><span><b>Lihat laporan</b><small>Rekap berdasarkan tanggal</small></span><strong>→</strong></button></div></article>
+        </div>
+        <article class="panel recent-panel"><div class="panel-head"><div><p class="eyebrow">AKTIVITAS TERBARU</p><h3>Absensi terakhir</h3></div><button class="text-button" data-goto="attendance">Buka absensi →</button></div><div id="recentAttendance" class="table-wrap"></div></article>
+      </section>
+
+      <section id="attendancePage" class="page-view" hidden>
+        <div class="welcome-row compact-welcome"><div><p class="eyebrow">PRESENSI HARIAN</p><h1>Absensi QR Code</h1><p class="muted">Pilih kelas dan sesi, buka daftar hadir, lalu pindai kartu QR siswa.</p></div><span class="pill pill-green">● Mode guru</span></div>
+        <div class="panel session-panel"><div class="panel-head"><div><h3>Pengaturan sesi</h3><p class="muted small">Setiap siswa hanya tercatat satu kali per tanggal dan sesi.</p></div><span id="sessionBadge" class="pill pill-neutral">Sesi belum dibuka</span></div><div class="form-grid session-fields"><div class="field"><label for="attendanceDate">Tanggal</label><input id="attendanceDate" type="date"></div><div class="field"><label for="attendanceClass">Kelas</label><select id="attendanceClass"><option value="">Pilih kelas</option></select></div><div class="field"><label for="attendanceSession">Sesi</label><select id="attendanceSession"><option value="Pagi">Pagi</option><option value="Siang">Siang</option><option value="Sesi 1">Sesi 1</option><option value="Sesi 2">Sesi 2</option></select></div><div class="field field-action"><label>&nbsp;</label><button id="openSessionButton" class="btn btn-primary">Buka sesi absensi</button></div></div></div>
+        <div class="scanner-grid"><article class="panel scanner-panel"><div class="panel-head"><div><p class="eyebrow">PEMINDAI KARTU</p><h3>Arahkan kamera ke QR Code</h3></div><span class="scanner-light"><i></i> Kamera</span></div><div id="reader" class="reader-box"><div class="reader-placeholder"><div class="camera-symbol">▣</div><b>Kamera belum aktif</b><p>Tekan tombol di bawah untuk mulai memindai kartu siswa.</p></div></div><div class="scanner-actions"><button id="startScannerButton" class="btn btn-primary">▣ Mulai pemindaian</button><button id="stopScannerButton" class="btn btn-outline" disabled>Hentikan</button></div><div id="scanNotice" class="scan-notice" role="status">Pastikan izin kamera diberikan pada browser.</div></article>
+          <article class="panel manual-panel"><div class="panel-head"><div><p class="eyebrow">ALTERNATIF</p><h3>Input manual</h3></div><span class="quick-icon quick-student">✎</span></div><p class="muted small">Gunakan bila kartu hilang atau kamera bermasalah.</p><form id="manualAttendanceForm" class="stack-form"><div class="field"><label for="manualStudent">Nama siswa</label><select id="manualStudent" required><option value="">Pilih siswa</option></select></div><div class="field"><label for="manualStatus">Status kehadiran</label><select id="manualStatus"><option value="Hadir">Hadir</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option><option value="Alpa">Alpa</option></select></div><div class="field"><label for="manualNotes">Catatan (opsional)</label><input id="manualNotes" type="text" maxlength="250" placeholder="Contoh: surat izin dari orang tua"></div><button class="btn btn-outline btn-wide" type="submit">Simpan absensi manual</button></form></article></div>
+        <article class="panel"><div class="panel-head"><div><p class="eyebrow">DAFTAR HARI INI</p><h3 id="attendanceTableTitle">Kehadiran siswa</h3></div><div class="inline-actions"><span id="attendanceCount" class="pill pill-neutral">0 siswa</span><button id="printAttendanceButton" class="btn btn-quiet btn-small">Cetak daftar</button></div></div><div id="attendanceTable" class="table-wrap"></div></article>
+      </section>
+
+      <section id="studentsPage" class="page-view" hidden>
+        <div class="welcome-row compact-welcome"><div><p class="eyebrow">DATABASE SISWA</p><h1>Data siswa</h1><p class="muted">Kelola daftar siswa dan buat kartu identitas QR untuk setiap anak.</p></div><button id="printCardsButton" class="btn btn-primary">▣ Cetak kartu QR</button></div>
+        <div class="students-layout"><article class="panel student-form-panel"><div class="panel-head"><div><h3 id="studentFormTitle">Tambah siswa</h3><p class="muted small">Isi data siswa dengan benar.</p></div><span class="quick-icon quick-student">＋</span></div><form id="studentForm" class="stack-form"><input type="hidden" id="studentId"><div class="field"><label for="studentNumber">NIS / nomor induk</label><input id="studentNumber" type="text" maxlength="40" placeholder="Contoh: 001" required></div><div class="field"><label for="studentName">Nama lengkap</label><input id="studentName" type="text" maxlength="100" placeholder="Nama siswa" required></div><div class="field"><label for="studentClass">Kelas</label><input id="studentClass" type="text" maxlength="40" placeholder="Contoh: 5A" required></div><div class="form-actions"><button class="btn btn-primary btn-wide" type="submit" id="saveStudentButton">Simpan siswa</button><button class="btn btn-quiet btn-wide" type="button" id="cancelStudentEdit" hidden>Batal edit</button></div></form></article><article class="panel student-list-panel"><div class="panel-head"><div><h3>Daftar siswa</h3><p class="muted small">QR Code terhubung ke ID unik internal, bukan nama siswa.</p></div><div class="student-total" id="studentTotal">0</div></div><div class="table-toolbar"><input id="studentSearch" type="search" placeholder="Cari nama, NIS, atau kelas..." aria-label="Cari siswa"><select id="studentClassFilter" aria-label="Filter kelas"><option value="">Semua kelas</option></select></div><div id="studentsTable" class="table-wrap"></div></article></div>
+      </section>
+
+      <section id="reportsPage" class="page-view" hidden>
+        <div class="welcome-row compact-welcome"><div><p class="eyebrow">LAPORAN KEHADIRAN</p><h1>Rekap absensi</h1><p class="muted">Cari data kehadiran, ubah status bila diperlukan, lalu cetak atau ekspor CSV.</p></div><button id="exportReportButton" class="btn btn-primary">↓ Ekspor CSV</button></div>
+        <div class="panel"><div class="form-grid report-fields"><div class="field"><label for="reportStart">Dari tanggal</label><input id="reportStart" type="date"></div><div class="field"><label for="reportEnd">Sampai tanggal</label><input id="reportEnd" type="date"></div><div class="field"><label for="reportClass">Kelas</label><select id="reportClass"><option value="">Semua kelas</option></select></div><div class="field field-action"><label>&nbsp;</label><button id="loadReportButton" class="btn btn-primary">Tampilkan rekap</button></div></div></div>
+        <div class="report-stat-grid"><div class="report-stat"><span>Total catatan</span><b id="reportRecords">0</b></div><div class="report-stat"><span>Hadir</span><b id="reportPresent">0</b></div><div class="report-stat"><span>Izin & sakit</span><b id="reportExcused">0</b></div><div class="report-stat"><span>Alpa</span><b id="reportAbsent">0</b></div></div>
+        <article class="panel"><div class="panel-head"><div><h3>Detail kehadiran</h3><p class="muted small">Klik status untuk mengedit status dan catatan.</p></div><button id="printReportButton" class="btn btn-quiet btn-small">Cetak laporan</button></div><div id="reportTable" class="table-wrap"></div></article>
+      </section>
+      <footer class="app-footer"><span>HadirKelas <b>•</b> Absensi QR</span><span>Data sinkron ke Google Spreadsheet</span></footer>
+    </main>
+  </div>
+  <div id="editAttendanceModal" class="modal-backdrop" hidden><div class="modal-card"><div class="panel-head"><div><p class="eyebrow">PERUBAHAN DATA</p><h3>Edit status kehadiran</h3></div><button class="icon-button" id="closeAttendanceModal" aria-label="Tutup">×</button></div><form id="editAttendanceForm" class="stack-form"><input type="hidden" id="editRecordId"><div class="field"><label for="editAttendanceStatus">Status</label><select id="editAttendanceStatus"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpa</option></select></div><div class="field"><label for="editAttendanceNotes">Catatan</label><textarea id="editAttendanceNotes" rows="3" maxlength="250" placeholder="Alasan atau keterangan"></textarea></div><div class="form-actions"><button type="button" class="btn btn-quiet" id="cancelAttendanceEdit">Batal</button><button class="btn btn-primary" type="submit">Simpan perubahan</button></div></form></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="/app.js" defer></script>
+</body>
+</html>
